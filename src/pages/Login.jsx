@@ -11,7 +11,7 @@ const Login = () => {
 
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   const [toast, setToast] = useState(null);
@@ -19,7 +19,7 @@ const Login = () => {
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
@@ -34,14 +34,13 @@ const Login = () => {
 
     const result = await dispatch(loginUser(formData));
     if (result.error) {
-        setToast(result.error.message);
-        setTimeout(() => setToast(null), 3000);
+      setToast(result.error.message);
+      setTimeout(() => setToast(null), 3000);
     } else {
       if (result.payload.role === "student") {
         console.log(result.payload.role);
         navigate("/homepage");
-      }
-      else {
+      } else {
         console.log(result.payload.role);
         navigate("/admin");
       }
@@ -53,7 +52,9 @@ const Login = () => {
       {toast && <Toast message={toast} />}
       <div className="px-4 py-12">
         <div className="bg-white p-6 rounded shadow-md w-full max-w-md mx-auto">
-          <h2 className="text-2xl font-semibold mb-4 text-center text-blue-600">Login</h2>
+          <h2 className="text-2xl font-semibold mb-4 text-center text-blue-600">
+            Login
+          </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

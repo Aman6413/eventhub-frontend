@@ -1,7 +1,9 @@
 const InputField = ({ label, name, value, onChange, type = "text" }) => {
   return (
     <div className="flex flex-col">
-      <label htmlFor={name} className="mb-1 font-medium text-sm">{label}</label>
+      <label htmlFor={name} className="mb-1 font-medium text-sm">
+        {label}
+      </label>
       <input
         type={type}
         id={name}

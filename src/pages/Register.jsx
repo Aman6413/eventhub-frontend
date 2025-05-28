@@ -28,7 +28,8 @@ const Register = () => {
     const { name, email, password } = form;
     if (!name.trim()) return "Name is required.";
     if (!email.trim()) return "Email is required.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Enter a valid email.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return "Enter a valid email.";
     if (!password.trim()) return "Password is required.";
     if (password.length < 6) return "Password must be at least 6 characters.";
     return null;
@@ -45,22 +46,54 @@ const Register = () => {
 
     const result = await dispatch(registerUserThunk(form));
     if (result.error) {
-        setToast(result.error.message);
-        setTimeout(() => setToast(null), 3000);
-    } else navigate("/homepage");
+      setToast(result.error.message);
+      setTimeout(() => setToast(null), 3000);
+    } else {
+      if (result.payload.role === "student") {
+        console.log(result.payload.role);
+        navigate("/homepage");
+      } else {
+        console.log(result.payload.role);
+        navigate("/admin");
+      }
+    };
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow relative">
       {toast && <Toast message={toast} />}
-      <h2 className="text-2xl font-semibold mb-4 text-center text-blue-600">Create an Account</h2>
+      <h2 className="text-2xl font-semibold mb-4 text-center text-blue-600">
+        Create an Account
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <InputField label="Name" name="name" value={form.name} onChange={handleChange} />
-        <InputField label="Email" name="email" type="email" value={form.email} onChange={handleChange} />
-        <InputField label="Password" name="password" type="password" value={form.password} onChange={handleChange} />
+        <InputField
+          label="Name"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Email"
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+        />
+        <InputField
+          label="Password"
+          name="password"
+          type="password"
+          value={form.password}
+          onChange={handleChange}
+        />
         <div className="flex flex-col">
           <label className="mb-1 font-medium text-sm">Role</label>
-          <select name="role" value={form.role} onChange={handleChange} className="border px-3 py-2 rounded">
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            className="border px-3 py-2 rounded"
+          >
             <option value="student">Student</option>
             <option value="admin">Admin</option>
           </select>

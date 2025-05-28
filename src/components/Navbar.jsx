@@ -17,7 +17,11 @@ const Navbar = () => {
   };
 
   const handleHomeClick = () => {
-    navigate("/homepage");
+    if (user.role === "admin") {
+      navigate("/admin");
+    } else {
+      navigate("/homepage");
+    }
   };
 
   return (
@@ -58,12 +62,12 @@ const Navbar = () => {
       <div className="w-1/3 flex justify-end items-center gap-4">
         {user && (
           <>
-            <Link
+            { user.role === 'student' && <Link
               to="/myregistrations"
               className="text-blue-600 hover:underline"
             >
               My Registrations
-            </Link>
+            </Link> }
             <button
               onClick={handleLogout}
               className="text-red-600 hover:underline"

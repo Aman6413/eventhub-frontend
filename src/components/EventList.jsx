@@ -1,5 +1,5 @@
 // src/components/EventList.jsx
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 const EventList = ({ events }) => {
   if (events.length === 0) {

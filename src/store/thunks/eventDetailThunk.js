@@ -6,9 +6,9 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "";
 export const fetchEventById = createAsyncThunk("eventDetail/fetch", async (fetchEventParams) => {
   try {
     const response = await axios({
-        method: "GET",
-        url: `${API_BASE_URL}/events/${fetchEventParams.eventId}`,
-        headers: { Authorization: `Bearer ${fetchEventParams.token}`}
+      method: "GET",
+      url: `${API_BASE_URL}/events/${fetchEventParams.eventId}`,
+      headers: { Authorization: `Bearer ${fetchEventParams.token}` }
     });
     return response.data.event;
   } catch (error) {
@@ -18,16 +18,16 @@ export const fetchEventById = createAsyncThunk("eventDetail/fetch", async (fetch
 });
 
 export const registerForEvent = createAsyncThunk("eventDetail/register", async (registerDetails) => {
-    try {
+  try {
     const response = await axios({
-        method: "POST",
-        url: `${API_BASE_URL}/events/${registerDetails.eventId}/register`,
-        headers: { Authorization: `Bearer ${registerDetails.token}`}
+      method: "POST",
+      url: `${API_BASE_URL}/events/${registerDetails.eventId}/register`,
+      headers: { Authorization: `Bearer ${registerDetails.token}` }
     });
     return response.data.message;
   } catch (error) {
     if (error.response.status == 400) throw new Error(error.response.data.errorMessage);
     else throw new Error("Something went wrong");
   }
-  }
+}
 );
