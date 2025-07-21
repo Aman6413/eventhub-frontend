@@ -31,7 +31,11 @@ export const fetchEventRegistrations = createAsyncThunk("registrations/fetch", a
   return response.data;
 })
 
-export const updateEvent = createAsyncThunk("events/update", async ({ id, data }) => {
-  const res = await axios.put(`/api/events/${id}`, data);
+export const updateEvent = createAsyncThunk("events/update", async ({ id, data, token }) => {
+  const res = await axios.put(`/api/admin/events/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
   return res.data;
 });

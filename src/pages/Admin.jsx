@@ -74,7 +74,8 @@ const AdminPage = () => {
     }
 
     if (editingId) {
-      dispatch(updateEvent({ id: editingId, data: formData }));
+      await dispatch(updateEvent({ id: editingId, data: formData, token: user.token }));
+      await dispatch(fetchEvents(user.token));
     } else {
       await dispatch(createEvent({ data: formData, token: user.token }));
       await dispatch(fetchEvents(user.token));
@@ -121,7 +122,6 @@ const AdminPage = () => {
 
   const isFormValid =
     Object.values(formData).every((val) => val.trim() !== "") &&
-    imageFile !== null &&
     imageError === "";
 
   return (

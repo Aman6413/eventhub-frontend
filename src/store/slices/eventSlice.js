@@ -1,6 +1,7 @@
 // src/store/slices/eventSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchEvents } from "../thunks/eventThunk";
+// import { updateEvent } from "../thunks/adminThunk";
 
 const eventSlice = createSlice({
   name: "events",
@@ -33,6 +34,17 @@ const eventSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       });
+      // .addCase(updateEvent.fulfilled, (state, action) => {
+      //   console.log("✅ updateEvent.fulfilled triggered:", action.payload);
+      
+      //   const updated = action.payload;
+      //   if (!updated || !updated._id) return;
+      
+      //   const index = state.list.findIndex((e) => e._id === updated._id);
+      //   if (index !== -1) {
+      //     state.list[index] = updated;
+      //   }
+      // });      
   },
 });
 
