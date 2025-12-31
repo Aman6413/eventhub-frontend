@@ -6,7 +6,7 @@ const adminSlice = createSlice({
     initialState: {
         createdEventId: null,
         loading: false,
-        deletedEventId: null
+        deletedEventId: null,
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -17,11 +17,12 @@ const adminSlice = createSlice({
             .addCase(deleteEvent.fulfilled, (state, action) => {
                 state.deletedEventId = action.payload;
             })
-            .addCase(updateEvent.fulfilled, (state, action) => {
-                const idx = state.events.findIndex(e => e._id === action.payload._id);
-                if (idx !== -1) state.events[idx] = action.payload;
+            .addCase(updateEvent.fulfilled, (state) => {
+                // No state mutation here
+                // UI is refreshed via fetchEvents()
             });
     },
 });
+
 
 export const adminReducer = adminSlice.reducer;

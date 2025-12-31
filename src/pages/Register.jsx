@@ -5,6 +5,7 @@ import InputField from "../components/InputField";
 import Button from "../components/Button";
 import Toast from "../components/Toast";
 import { useNavigate } from "react-router-dom";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -56,7 +57,7 @@ const Register = () => {
         console.log(result.payload.role);
         navigate("/admin");
       }
-    };
+    }
   };
 
   return (
@@ -102,6 +103,8 @@ const Register = () => {
           {loading ? "Registering..." : "Register"}
         </Button>
       </form>
+      <div className="my-4 text-center text-gray-500">OR</div>
+      <GoogleLoginButton />
     </div>
   );
 };

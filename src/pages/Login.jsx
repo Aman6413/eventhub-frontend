@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/thunks/authThunk";
 import { Link, useNavigate } from "react-router-dom";
 import Toast from "../components/Toast";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -89,6 +90,8 @@ const Login = () => {
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
+          <div className="my-4 text-center text-gray-500">OR</div>
+          <GoogleLoginButton />
 
           <p className="text-sm text-center mt-4">
             Don’t have an account?{" "}
