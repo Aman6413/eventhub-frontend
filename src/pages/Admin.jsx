@@ -1,4 +1,3 @@
-// Updated AdminPage.js
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,12 +14,18 @@ import { getBase64 } from "../utilities/utilities";
 const AdminPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const { events, auth } = useSelector((state) => ({
     events: state.events,
     auth: state.auth,
   }));
 
+  const { user } = auth;
+  const { list } = events;
+
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -29,17 +34,15 @@ const AdminPage = () => {
     location: "",
     contactNumber: "",
     type: "",
+    registrationDeadline: "", // 🔥 NEW
   });
+
   const [imageFile, setImageFile] = useState(null);
   const [imageError, setImageError] = useState("");
-  const [editingId, setEditingId] = useState(null);
-
-  const { user } = auth;
-  const { list } = events;
 
   useEffect(() => {
     dispatch(fetchEvents(user.token));
-  }, [dispatch]);
+  }, [dispatch, user.token]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -47,54 +50,58 @@ const AdminPage = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 500 * 1024) {
-        setImageError("Image size exceeds 500 KB.");
-        setImageFile(null);
-      } else {
-        setImageFile(file);
-        setImageError("");
-      }
-    } else {
+    if (!file) return;
+
+    if (file.size > 500 * 1024) {
+      setImageError("Image size exceeds 500 KB");
       setImageFile(null);
-      setImageError("Please select an image.");
+    } else {
+      setImageError("");
+      setImageFile(file);
     }
   };
 
   const handleCreateOrUpdate = async () => {
-    if (formData.date)
-      formData.date = moment(formData.date).format("DD-MM-YYYY");
-    if (formData.time)
-      formData.time = moment(formData.time, "HH:mm").format("h:mm A");
-    if (formData.type) formData.type = formData.type.toUpperCase();
+    const payload = { ...formData };
+
+    // formatting
+    payload.date = moment(payload.date).format("DD-MM-YYYY");
+    payload.time = moment(payload.time, "HH:mm").format("h:mm A");
+    payload.type = payload.type.toUpperCase();
 
     if (imageFile) {
-      const imgBase64 = await getBase64(imageFile);
-      formData.imageUrl = imgBase64;
+      payload.imageUrl = await getBase64(imageFile);
     }
 
     if (editingId) {
-      await dispatch(updateEvent({ id: editingId, data: formData, token: user.token }));
-      await dispatch(fetchEvents(user.token));
+      await dispatch(
+        updateEvent({ id: editingId, data: payload, token: user.token })
+      );
     } else {
-      await dispatch(createEvent({ data: formData, token: user.token }));
-      await dispatch(fetchEvents(user.token));
+      await dispatch(createEvent({ data: payload, token: user.token }));
     }
+
+    await dispatch(fetchEvents(user.token));
     resetForm();
   };
 
   const handleEdit = (event) => {
     setEditingId(event._id);
-    setFormData({
-      title: event.title,
-      description: event.description,
-      date: event.date,
-      time: event.time,
-      location: event.location,
-      contactNumber: event.contactNumber,
-      type: event.type,
-    });
     setShowForm(true);
+
+    setFormData({
+      title: event.title || "",
+      description: event.description || "",
+      date: moment(event.date, "DD-MM-YYYY").format("YYYY-MM-DD"),
+      time: moment(event.time, "h:mm A").format("HH:mm"),
+      location: event.location || "",
+      contactNumber: event.contactNumber || "",
+      type: event.type || "",
+      registrationDeadline: event.registrationDeadline
+        ? moment(event.registrationDeadline).format("YYYY-MM-DD")
+        : "",
+    });
+
     setImageFile(null);
     setImageError("");
   };
@@ -113,16 +120,16 @@ const AdminPage = () => {
       location: "",
       contactNumber: "",
       type: "",
+      registrationDeadline: "",
     });
     setImageFile(null);
     setImageError("");
-    setShowForm(false);
     setEditingId(null);
+    setShowForm(false);
   };
 
   const isFormValid =
-    Object.values(formData).every((val) => val.trim() !== "") &&
-    imageError === "";
+    Object.values(formData).every((val) => val !== "") && imageError === "";
 
   return (
     <div className="max-w-5xl mx-auto mt-8 p-4">
@@ -130,18 +137,18 @@ const AdminPage = () => {
         Admin - Manage Events
       </h1>
 
-      <Button onClick={() => setShowForm((prev) => !prev)}>
+      <Button onClick={() => setShowForm((p) => !p)}>
         {showForm ? "Cancel" : "Create New Event"}
       </Button>
 
       {showForm && (
         <div className="mt-4 bg-gray-100 p-4 rounded">
-          <h2 className="text-xl mb-2">
+          <h2 className="text-xl mb-3">
             {editingId ? "Edit Event" : "Create Event"}
           </h2>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
-              type="text"
               name="title"
               value={formData.title}
               onChange={handleInputChange}
@@ -149,7 +156,6 @@ const AdminPage = () => {
               className="p-2 border rounded"
             />
             <input
-              type="text"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
@@ -171,7 +177,6 @@ const AdminPage = () => {
               className="p-2 border rounded"
             />
             <input
-              type="text"
               name="location"
               value={formData.location}
               onChange={handleInputChange}
@@ -179,13 +184,27 @@ const AdminPage = () => {
               className="p-2 border rounded"
             />
             <input
-              type="text"
               name="contactNumber"
               value={formData.contactNumber}
               onChange={handleInputChange}
               placeholder="Contact Number"
               className="p-2 border rounded"
             />
+
+            {/* 🔥 DEADLINE FIELD */}
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Registration Deadline
+              </label>
+              <input
+                type="date"
+                name="registrationDeadline"
+                value={formData.registrationDeadline}
+                onChange={handleInputChange}
+                className="p-2 border rounded"
+              />
+            </div>
+
             <select
               name="type"
               value={formData.type}
@@ -198,28 +217,16 @@ const AdminPage = () => {
               <option value="Sports">Sports</option>
             </select>
 
-            <div>
-              <label className="block mb-1 font-semibold">
-                Image (Max 500 KB)
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="p-2 border rounded w-full"
-              />
-              {imageError && (
-                <p className="text-red-600 text-sm mt-1">{imageError}</p>
-              )}
-            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="p-2 border rounded"
+            />
           </div>
 
           <div className="mt-4">
-            <Button
-              onClick={handleCreateOrUpdate}
-              disabled={!isFormValid}
-              className={!isFormValid ? "bg-gray-300 cursor-not-allowed" : ""}
-            >
+            <Button onClick={handleCreateOrUpdate} disabled={!isFormValid}>
               {editingId ? "Update" : "Create"}
             </Button>
           </div>
@@ -235,18 +242,22 @@ const AdminPage = () => {
             <p className="text-sm text-gray-600">
               {event.date} | {event.time}
             </p>
-            <p className="text-gray-700">{event.description}</p>
+            {event.registrationDeadline && (
+              <p className="text-xs text-red-600">
+                Deadline: {event.registrationDeadline}
+              </p>
+            )}
             <div className="mt-3 flex gap-3">
               <Button onClick={() => handleEdit(event)}>Edit</Button>
               <Button
-                onClick={() => handleDelete(event._id)}
                 className="bg-red-500"
+                onClick={() => handleDelete(event._id)}
               >
                 Delete
               </Button>
               <Button
-                onClick={() => navigate(`/events/${event._id}`)}
                 className="bg-green-600"
+                onClick={() => navigate(`/events/${event._id}`)}
               >
                 Open
               </Button>

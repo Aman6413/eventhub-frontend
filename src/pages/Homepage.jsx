@@ -4,36 +4,52 @@ import { fetchEvents } from "../store/thunks/eventThunk";
 import { setSearchTerm, setFilter } from "../store/slices/eventSlice";
 import EventList from "../components/EventList";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { events, auth } = useSelector((state) => {
-    return {
-      events: state.events,
-      auth: state.auth,
-    };
-  });
+
+  const { events, auth } = useSelector((state) => ({
+    events: state.events,
+    auth: state.auth,
+  }));
 
   const { list, loading, searchTerm, filter } = events;
-  let { user } = auth;
+  const { user } = auth;
 
   useEffect(() => {
-    if (!user && !localStorage.getItem("eventhub user")) navigate("/login");
-    if (!user) window.location.reload();
-    else {
-      const token = user.token;
-      dispatch(fetchEvents(token));
+    if (!user && !localStorage.getItem("eventhub user")) {
+      navigate("/login");
+      return;
     }
-  }, [dispatch]);
 
+    if (!user) {
+      window.location.reload();
+    } else {
+      dispatch(fetchEvents(user.token));
+    }
+  }, [dispatch, user, navigate]);
+
+  // 🔥 FILTER WITH DEADLINE LOGIC
   const filteredEvents = list.filter((event) => {
     const matchesSearch = event.title
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
+
     const matchesFilter =
-      filter === "all" || event.type.toLowerCase() === filter.toLowerCase();
-    return matchesSearch && matchesFilter;
+      filter === "all" ||
+      event.type.toLowerCase() === filter.toLowerCase();
+
+    // deadline check
+    let isOpen = true;
+    if (event.registrationDeadline) {
+      const today = moment().startOf("day");
+      const deadline = moment(event.registrationDeadline, "YYYY-MM-DD");
+      isOpen = today.isSameOrBefore(deadline);
+    }
+
+    return matchesSearch && matchesFilter && isOpen;
   });
 
   return (
@@ -48,7 +64,8 @@ const HomePage = () => {
           placeholder="Search events..."
           value={searchTerm}
           onChange={(e) => dispatch(setSearchTerm(e.target.value))}
-          className="w-full md:w-1/2 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full md:w-1/2 px-4 py-2 border rounded
+                     focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         <div className="flex gap-2">
@@ -70,6 +87,8 @@ const HomePage = () => {
 
       {loading ? (
         <p className="text-center text-gray-600">Loading events...</p>
+      ) : filteredEvents.length === 0 ? (
+        <p className="text-center text-gray-500">No events found.</p>
       ) : (
         <EventList events={filteredEvents} />
       )}

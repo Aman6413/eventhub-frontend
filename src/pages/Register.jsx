@@ -103,8 +103,8 @@ const Register = () => {
           {loading ? "Registering..." : "Register"}
         </Button>
       </form>
-      <div className="my-4 text-center text-gray-500">OR</div>
-      <GoogleLoginButton />
+      {/* <div className="my-4 text-center text-gray-500">OR</div>
+      <GoogleLoginButton /> */}
     </div>
   );
 };
