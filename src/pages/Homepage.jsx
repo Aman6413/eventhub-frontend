@@ -4,7 +4,6 @@ import { fetchEvents } from "../store/thunks/eventThunk";
 import { setSearchTerm, setFilter } from "../store/slices/eventSlice";
 import EventList from "../components/EventList";
 import { useNavigate } from "react-router-dom";
-import moment from "moment";
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -38,18 +37,10 @@ const HomePage = () => {
       .includes(searchTerm.toLowerCase());
 
     const matchesFilter =
-      filter === "all" ||
-      event.type.toLowerCase() === filter.toLowerCase();
+      filter === "all" || event.type.toLowerCase() === filter.toLowerCase();
 
-    // deadline check
-    let isOpen = true;
-    if (event.registrationDeadline) {
-      const today = moment().startOf("day");
-      const deadline = moment(event.registrationDeadline, "YYYY-MM-DD");
-      isOpen = today.isSameOrBefore(deadline);
-    }
-
-    return matchesSearch && matchesFilter && isOpen;
+    // ✅ DO NOT check deadline here
+    return matchesSearch && matchesFilter;
   });
 
   return (

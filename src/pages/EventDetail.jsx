@@ -33,10 +33,7 @@ const EventDetail = () => {
       return;
     }
 
-    if (!user) {
-      window.location.reload();
-      return;
-    }
+    if (!user) return;
 
     const fetchData = async () => {
       const res = await dispatch(
@@ -46,12 +43,14 @@ const EventDetail = () => {
       if (!res.error) {
         dispatch(getMyRegistrations(user.token));
 
-        const regRes = await dispatch(
-          fetchEventRegistrations({ id, token: user.token })
-        );
+        if (user.role === "admin") {
+          const regRes = await dispatch(
+            fetchEventRegistrations({ id, token: user.token })
+          );
 
-        if (regRes.payload && Array.isArray(regRes.payload)) {
-          setEventRegistrations(regRes.payload);
+          if (regRes.payload && Array.isArray(regRes.payload)) {
+            setEventRegistrations(regRes.payload);
+          }
         }
       }
     };
@@ -59,9 +58,7 @@ const EventDetail = () => {
     fetchData();
   }, [dispatch, id, user, navigate]);
 
-  const isRegistered = myRegistrations.find(
-    (event) => event._id === id
-  );
+  const isRegistered = myRegistrations.find((event) => event._id === id);
 
   // 🔥 DEADLINE LOGIC
   const today = moment().startOf("day");
@@ -75,28 +72,29 @@ const EventDetail = () => {
     const res = await dispatch(
       registerForEvent({ token: user.token, eventId: id })
     );
-
-    if (res.payload === "Registration Successful") {
-      setRegistrationStatus(true);
-    } else if (res.payload === "Registration Cancelled") {
-      navigate("/homepage");
+  
+    const msg = res.payload?.toLowerCase() || "";
+  
+    if (msg.includes("success") || msg.includes("cancel")) {
+      await dispatch(fetchEventById({ eventId: id, token: user.token }));
+      await dispatch(getMyRegistrations(user.token));
     }
-  };
+  
+    if (msg.includes("success")) {
+      setRegistrationStatus(true);
+    }
+  };  
 
   if (loading || !selectedEvent) {
     return <div className="text-center mt-6">Loading...</div>;
   }
 
   if (error) {
-    return (
-      <div className="text-red-500 text-center mt-6">
-        {error}
-      </div>
-    );
+    return <div className="text-red-500 text-center mt-6">{error}</div>;
   }
 
   if (registrationStatus) {
-    return <SuccessScreen message={registrationMessage} />;
+    return <SuccessScreen message="Registration Successful 🎉" />;
   }
 
   return (
@@ -110,9 +108,7 @@ const EventDetail = () => {
 
           <p className="mb-2 text-gray-700">
             <strong>Date:</strong>{" "}
-            {moment(selectedEvent.date, "DD-MM-YYYY").format(
-              "DD MMMM YYYY"
-            )}
+            {moment(selectedEvent.date, "DD-MM-YYYY").format("DD MMMM YYYY")}
           </p>
 
           <p className="mb-2 text-gray-700">
@@ -132,6 +128,11 @@ const EventDetail = () => {
             <strong>Type:</strong> {selectedEvent.type}
           </p>
 
+          <p className="mb-2 text-gray-700">
+            <strong>Registered Students:</strong>{" "}
+            {selectedEvent.registrationCount || 0}
+          </p>
+
           {/* 🔥 REGISTRATION DEADLINE */}
           {selectedEvent.registrationDeadline && (
             <p className="mb-2 text-gray-700">
@@ -142,9 +143,7 @@ const EventDetail = () => {
             </p>
           )}
 
-          <p className="mb-4 text-gray-800">
-            {selectedEvent.description}
-          </p>
+          <p className="mb-4 text-gray-800">{selectedEvent.description}</p>
 
           {/* 🔥 REGISTER BUTTON LOGIC */}
           {user?.role !== "admin" && (
@@ -155,9 +154,7 @@ const EventDetail = () => {
                 </p>
               ) : (
                 <Button onClick={handleRegister}>
-                  {!isRegistered
-                    ? "Register"
-                    : "Cancel Registration"}
+                  {!isRegistered ? "Register" : "Cancel Registration"}
                 </Button>
               )}
             </>
@@ -187,30 +184,18 @@ const EventDetail = () => {
             <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead className="bg-gray-100 text-gray-700">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold">
-                    #
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold">
-                    Name
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold">
-                    Email
-                  </th>
+                  <th className="px-4 py-3 text-left font-semibold">#</th>
+                  <th className="px-4 py-3 text-left font-semibold">Name</th>
+                  <th className="px-4 py-3 text-left font-semibold">Email</th>
                 </tr>
               </thead>
 
               <tbody className="bg-white divide-y divide-gray-100">
                 {eventRegistrations.map((reg, index) => (
                   <tr key={index}>
-                    <td className="px-4 py-2 text-gray-600">
-                      {index + 1}
-                    </td>
-                    <td className="px-4 py-2 text-gray-900">
-                      {reg.name}
-                    </td>
-                    <td className="px-4 py-2 text-gray-700">
-                      {reg.email}
-                    </td>
+                    <td className="px-4 py-2 text-gray-600">{index + 1}</td>
+                    <td className="px-4 py-2 text-gray-900">{reg.name}</td>
+                    <td className="px-4 py-2 text-gray-700">{reg.email}</td>
                   </tr>
                 ))}
               </tbody>

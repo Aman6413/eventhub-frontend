@@ -3,11 +3,7 @@ import moment from "moment";
 
 const EventList = ({ events }) => {
   if (!events || events.length === 0) {
-    return (
-      <p className="text-center text-gray-600 mt-4">
-        No events found.
-      </p>
-    );
+    return <p className="text-center text-gray-600 mt-4">No events found.</p>;
   }
 
   return (
@@ -51,6 +47,10 @@ const EventList = ({ events }) => {
               Event Date: {event.date}
             </p>
 
+            <p className="mt-1 text-xs text-gray-500">
+              👥 Registered: {event.registrationCount}
+            </p>
+
             {/* Deadline */}
             {event.registrationDeadline && (
               <p className="text-sm text-gray-500 mt-1">
@@ -70,11 +70,7 @@ const EventList = ({ events }) => {
 
         // ❌ Closed event → no navigation
         if (isClosed) {
-          return (
-            <div key={event._id}>
-              {CardContent}
-            </div>
-          );
+          return <div key={event._id}>{CardContent}</div>;
         }
 
         // ✅ Open event → clickable

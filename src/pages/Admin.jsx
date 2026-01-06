@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchEvents } from "../store/thunks/eventThunk";
 import moment from "moment";
 import { getBase64 } from "../utilities/utilities";
+import axios from "axios";
 
 const AdminPage = () => {
   const dispatch = useDispatch();
@@ -40,8 +41,20 @@ const AdminPage = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imageError, setImageError] = useState("");
 
+  const [analytics, setAnalytics] = useState(null);
+
   useEffect(() => {
     dispatch(fetchEvents(user.token));
+
+    const fetchAnalytics = async () => {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}/admin/analytics`,
+        { headers: { Authorization: `Bearer ${user.token}` } }
+      );
+      setAnalytics(res.data);
+    };
+
+    fetchAnalytics();
   }, [dispatch, user.token]);
 
   const handleInputChange = (e) => {
@@ -133,6 +146,41 @@ const AdminPage = () => {
 
   return (
     <div className="max-w-5xl mx-auto mt-8 p-4">
+      {analytics && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="p-4 bg-blue-100 rounded shadow">
+            <p className="text-sm text-gray-600">Total Events</p>
+            <p className="text-2xl font-bold">{analytics.totalEvents}</p>
+          </div>
+
+          <div className="p-4 bg-green-100 rounded shadow">
+            <p className="text-sm text-gray-600">Total Registrations</p>
+            <p className="text-2xl font-bold">{analytics.totalRegistrations}</p>
+          </div>
+
+          <div
+            className="p-4 bg-orange-100 rounded shadow cursor-pointer hover:bg-orange-200 transition"
+            onClick={() => {
+              if (!analytics?.topEvent?._id) {
+                alert("Event not found");
+                return;
+              }
+              navigate(`/events/${analytics.topEvent._id}`);
+            }}
+          >
+            <p className="text-sm text-gray-600">Top Event</p>
+
+            <p className="font-semibold text-blue-700 underline">
+              {analytics.topEvent?.title || "N/A"}
+            </p>
+
+            <p className="text-sm text-gray-700">
+              👥 {analytics.topEvent?.count || 0}
+            </p>
+          </div>
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold text-blue-700 mb-4">
         Admin - Manage Events
       </h1>
