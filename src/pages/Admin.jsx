@@ -36,6 +36,7 @@ const AdminPage = () => {
     contactNumber: "",
     type: "",
     registrationDeadline: "", // 🔥 NEW
+    maxRegistrations: "",
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -86,6 +87,11 @@ const AdminPage = () => {
       payload.imageUrl = await getBase64(imageFile);
     }
 
+    // ensure numeric
+    if (payload.maxRegistrations !== undefined && payload.maxRegistrations !== null) {
+      payload.maxRegistrations = Number(payload.maxRegistrations);
+    }
+
     if (editingId) {
       await dispatch(
         updateEvent({ id: editingId, data: payload, token: user.token })
@@ -113,6 +119,7 @@ const AdminPage = () => {
       registrationDeadline: event.registrationDeadline
         ? moment(event.registrationDeadline).format("YYYY-MM-DD")
         : "",
+      maxRegistrations: event.maxRegistrations || "",
     });
 
     setImageFile(null);
@@ -134,6 +141,7 @@ const AdminPage = () => {
       contactNumber: "",
       type: "",
       registrationDeadline: "",
+      maxRegistrations: "",
     });
     setImageFile(null);
     setImageError("");
@@ -271,6 +279,21 @@ const AdminPage = () => {
               onChange={handleImageChange}
               className="p-2 border rounded"
             />
+
+            {/* Max Registrations */}
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Max Registrations
+              </label>
+              <input
+                type="number"
+                min={1}
+                name="maxRegistrations"
+                value={formData.maxRegistrations}
+                onChange={handleInputChange}
+                className="p-2 border rounded"
+              />
+            </div>
           </div>
 
           <div className="mt-4">
@@ -282,36 +305,55 @@ const AdminPage = () => {
       )}
 
       <div className="mt-6 grid gap-4 md:grid-cols-2">
-        {list.map((event) => (
-          <div key={event._id} className="border p-4 rounded shadow">
-            <h3 className="text-lg font-semibold text-blue-600">
-              {event.title}
-            </h3>
-            <p className="text-sm text-gray-600">
-              {event.date} | {event.time}
-            </p>
-            {event.registrationDeadline && (
-              <p className="text-xs text-red-600">
-                Deadline: {event.registrationDeadline}
-              </p>
-            )}
-            <div className="mt-3 flex gap-3">
-              <Button onClick={() => handleEdit(event)}>Edit</Button>
-              <Button
-                className="bg-red-500"
-                onClick={() => handleDelete(event._id)}
-              >
-                Delete
-              </Button>
-              <Button
-                className="bg-green-600"
-                onClick={() => navigate(`/events/${event._id}`)}
-              >
-                Open
-              </Button>
+        {list.map((event) => {
+          const status = event.eventStatus || "UPCOMING";
+
+          return (
+            <div key={event._id} className="border p-4 rounded shadow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-600">{event.title}</h3>
+                  <p className="text-sm text-gray-600">{event.date} | {event.time}</p>
+                  {event.registrationDeadline && (
+                    <p className="text-xs text-red-600">Deadline: {event.registrationDeadline}</p>
+                  )}
+                </div>
+
+                <span className={`text-xs px-2 py-1 rounded ${
+                  status === "UPCOMING"
+                    ? "bg-blue-100 text-blue-600"
+                    : status === "REGISTRATION_CLOSED"
+                    ? "bg-orange-100 text-orange-600"
+                    : status === "LIVE"
+                    ? "bg-green-100 text-green-600"
+                    : "bg-gray-100 text-gray-600"
+                }`}>
+                  {status === "UPCOMING" ? "Upcoming" : status === "REGISTRATION_CLOSED" ? "Registration Closed" : status === "LIVE" ? "Live" : "Completed"}
+                </span>
+              </div>
+
+              <div className="mt-3 flex gap-3">
+                {status !== "COMPLETED" && (
+                  <Button onClick={() => handleEdit(event)}>Edit</Button>
+                )}
+
+                <Button
+                  className="bg-red-500"
+                  onClick={() => handleDelete(event._id)}
+                >
+                  Delete
+                </Button>
+
+                <Button
+                  className="bg-green-600"
+                  onClick={() => navigate(`/events/${event._id}`)}
+                >
+                  Open
+                </Button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

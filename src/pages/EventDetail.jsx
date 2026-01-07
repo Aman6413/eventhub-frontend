@@ -60,13 +60,17 @@ const EventDetail = () => {
 
   const isRegistered = myRegistrations.find((event) => event._id === id);
 
-  // 🔥 DEADLINE LOGIC
-  const today = moment().startOf("day");
-  const deadline = selectedEvent?.registrationDeadline
-    ? moment(selectedEvent.registrationDeadline)
-    : null;
+  const status = selectedEvent?.eventStatus || "UPCOMING";
 
-  const isRegistrationClosed = deadline && today.isAfter(deadline);
+  // status-based flags
+  const isRegistrationClosed = status === "REGISTRATION_CLOSED";
+  const isCompleted = status === "COMPLETED";
+  const isLive = status === "LIVE";
+
+  const isFull =
+    selectedEvent?.maxRegistrations !== undefined &&
+    selectedEvent?.maxRegistrations !== null &&
+    (selectedEvent.registrationCount || 0) >= selectedEvent.maxRegistrations;
 
   const handleRegister = async () => {
     const res = await dispatch(
@@ -128,10 +132,32 @@ const EventDetail = () => {
             <strong>Type:</strong> {selectedEvent.type}
           </p>
 
-          <p className="mb-2 text-gray-700">
-            <strong>Registered Students:</strong>{" "}
-            {selectedEvent.registrationCount || 0}
-          </p>
+          <div className="flex items-center gap-3 mb-2">
+            <p className="mb-0 text-gray-700">
+              <strong>Registered:</strong>{" "}
+              {(selectedEvent.registrationCount || 0) + " / " + (selectedEvent.maxRegistrations || "-")}
+            </p>
+
+            <span
+              className={`text-xs px-2 py-1 rounded ${
+                status === "UPCOMING"
+                  ? "bg-blue-100 text-blue-600"
+                  : status === "REGISTRATION_CLOSED"
+                  ? "bg-orange-100 text-orange-600"
+                  : status === "LIVE"
+                  ? "bg-green-100 text-green-600"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {status === "UPCOMING"
+                ? "Upcoming"
+                : status === "REGISTRATION_CLOSED"
+                ? "Registration Closed"
+                : status === "LIVE"
+                ? "Live"
+                : "Completed"}
+            </span>
+          </div>
 
           {/* 🔥 REGISTRATION DEADLINE */}
           {selectedEvent.registrationDeadline && (
@@ -148,12 +174,14 @@ const EventDetail = () => {
           {/* 🔥 REGISTER BUTTON LOGIC */}
           {user?.role !== "admin" && (
             <>
-              {isRegistrationClosed ? (
-                <p className="text-red-600 font-semibold mt-4">
-                  Registration Closed
-                </p>
+              {isCompleted ? (
+                <p className="text-gray-600 font-semibold mt-4">Event Completed</p>
+              ) : isRegistrationClosed ? (
+                <p className="text-red-600 font-semibold mt-4">Registration Closed</p>
+              ) : isFull ? (
+                <p className="text-red-600 font-semibold mt-4">Event Full</p>
               ) : (
-                <Button onClick={handleRegister}>
+                <Button onClick={handleRegister} disabled={isLive}>
                   {!isRegistered ? "Register" : "Cancel Registration"}
                 </Button>
               )}
