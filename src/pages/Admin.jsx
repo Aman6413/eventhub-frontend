@@ -16,13 +16,8 @@ const AdminPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { events, auth } = useSelector((state) => ({
-    events: state.events,
-    auth: state.auth,
-  }));
-
-  const { user } = auth;
-  const { list } = events;
+  const user = useSelector((state) => state.auth.user);
+  const list = useSelector((state) => state.events.list);
 
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -45,17 +40,10 @@ const AdminPage = () => {
   const [analytics, setAnalytics] = useState(null);
 
   useEffect(() => {
+    if (!user || !user.token) return;
     dispatch(fetchEvents(user.token));
 
-    const fetchAnalytics = async () => {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_BASE_URL}/admin/analytics`,
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      setAnalytics(res.data);
-    };
-
-    fetchAnalytics();
+    // analytics moved to Profile dashboard
   }, [dispatch, user.token]);
 
   const handleInputChange = (e) => {

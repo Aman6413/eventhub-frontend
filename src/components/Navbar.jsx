@@ -62,12 +62,7 @@ const Navbar = () => {
       <div className="w-1/3 flex justify-end items-center gap-4">
         {user && (
           <>
-            { user.role === 'student' && <Link
-              to="/myregistrations"
-              className="text-blue-600 hover:underline"
-            >
-              My Registrations
-            </Link> }
+            <Link to="/profile" className="text-blue-600 hover:underline">Profile</Link>
             <button
               onClick={handleLogout}
               className="text-red-600 hover:underline"

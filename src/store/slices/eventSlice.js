@@ -1,7 +1,6 @@
 // src/store/slices/eventSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchEvents } from "../thunks/eventThunk";
-// import { updateEvent } from "../thunks/adminThunk";
 
 const eventSlice = createSlice({
   name: "events",

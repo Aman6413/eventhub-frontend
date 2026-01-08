@@ -19,13 +19,11 @@ const EventDetail = () => {
   const [registrationStatus, setRegistrationStatus] = useState(false);
   const [eventRegistrations, setEventRegistrations] = useState([]);
 
-  const { eventDetail, auth } = useSelector((state) => ({
-    eventDetail: state.eventDetail,
-    auth: state.auth,
-  }));
-
-  const { selectedEvent, loading, error, registrationMessage } = eventDetail;
-  const { user, myRegistrations } = auth;
+  const selectedEvent = useSelector((state) => state.eventDetail.selectedEvent);
+  const loading = useSelector((state) => state.eventDetail.loading);
+  const error = useSelector((state) => state.eventDetail.error);
+  const user = useSelector((state) => state.auth.user);
+  const myRegistrations = useSelector((state) => state.auth.myRegistrations);
 
   useEffect(() => {
     if (!user && !localStorage.getItem("eventhub user")) {
@@ -33,7 +31,7 @@ const EventDetail = () => {
       return;
     }
 
-    if (!user) return;
+    if (!user || !user.token) return;
 
     const fetchData = async () => {
       const res = await dispatch(
@@ -56,7 +54,8 @@ const EventDetail = () => {
     };
 
     fetchData();
-  }, [dispatch, id, user, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, id, user?.token, user?.role, navigate]);
 
   const isRegistered = myRegistrations.find((event) => event._id === id);
 

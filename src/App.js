@@ -2,12 +2,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import VerifyOtp from "./pages/VerifyOtp";
+import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
 import HomePage from "./pages/Homepage";
 import EventDetail from "./pages/EventDetail";
-import MyRegistrations from "./pages/MyRegistrations";
 import AdminPage from "./pages/Admin";
 import ProtectedRoute from "./components/ProtectedRoute";
-// import AIChat from "./components/AIChat/AIChat";
 
 function App() {
   return (
@@ -19,6 +21,17 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute allowedRoles={["admin", "student"]}>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Student routes */}
           <Route
@@ -30,14 +43,7 @@ function App() {
             }
           />
 
-          <Route
-            path="/myregistrations"
-            element={
-              <ProtectedRoute allowedRoles={["student"]}>
-                <MyRegistrations />
-              </ProtectedRoute>
-            }
-          />
+          {/* MyRegistrations page removed */}
 
           {/* Admin route */}
           <Route
@@ -60,8 +66,7 @@ function App() {
           />
         </Routes>
 
-        {/* ✅ AI Chat must be here */}
-        {/* <AIChat /> */}
+        {/* AI Chat removed */}
       </div>
     </Router>
   );

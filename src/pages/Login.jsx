@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/thunks/authThunk";
 import { Link, useNavigate } from "react-router-dom";
 import Toast from "../components/Toast";
-import GoogleLoginButton from "../components/GoogleLoginButton";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -90,15 +89,20 @@ const Login = () => {
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
-          {/* <div className="my-4 text-center text-gray-500">OR</div>
-          <GoogleLoginButton /> */}
+          {/* Google login removed */}
 
-          <p className="text-sm text-center mt-4">
-            Don’t have an account?{" "}
-            <Link to="/register" className="text-blue-600 hover:underline">
-              Register
-            </Link>
-          </p>
+            <p className="text-sm text-center mt-4">
+              Don’t have an account?{" "}
+              <Link to="/register" className="text-blue-600 hover:underline">
+                Register
+              </Link>
+            </p>
+
+            <p className="text-sm text-center mt-2">
+              <Link to="/forgot-password" className="text-blue-600 hover:underline">
+                Forgot password?
+              </Link>
+            </p>
         </div>
       </div>
     </>

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { getMyRegistrations, registerUserThunk } from "../thunks/authThunk";
+import { getMyRegistrations, registerUserThunk, getProfile } from "../thunks/authThunk";
 
 const initialState = {
     user: JSON.parse(localStorage.getItem("eventhub user")) || null,
@@ -39,6 +39,15 @@ const authSlice = createSlice({
             })
             .addCase(getMyRegistrations.rejected, (state, action) => {
                 state.error = action.payload;
+            });
+            builder
+            .addCase(getProfile.fulfilled, (state, action) => {
+                // Preserve existing token (if any) so we don't overwrite it with profile data
+                const existing = state.user || JSON.parse(localStorage.getItem("eventhub user")) || {};
+                const token = existing.token;
+                const merged = token ? { ...action.payload, token } : action.payload;
+                state.user = merged;
+                localStorage.setItem("eventhub user", JSON.stringify(merged));
             });
     }
 })

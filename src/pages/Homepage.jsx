@@ -9,13 +9,11 @@ const HomePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { events, auth } = useSelector((state) => ({
-    events: state.events,
-    auth: state.auth,
-  }));
-
-  const { list, loading, searchTerm, filter } = events;
-  const { user } = auth;
+  const list = useSelector((state) => state.events.list);
+  const loading = useSelector((state) => state.events.loading);
+  const searchTerm = useSelector((state) => state.events.searchTerm);
+  const filter = useSelector((state) => state.events.filter);
+  const user = useSelector((state) => state.auth.user);
 
   useEffect(() => {
     if (!user && !localStorage.getItem("eventhub user")) {
@@ -26,6 +24,7 @@ const HomePage = () => {
     if (!user) {
       window.location.reload();
     } else {
+      if (!user.token) return;
       dispatch(fetchEvents(user.token));
     }
   }, [dispatch, user, navigate]);

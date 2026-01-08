@@ -15,8 +15,8 @@ export const registerUserThunk = createAsyncThunk("auth/register", async (userDa
         }
         return res.data;
     } catch (error) {
-        if (error.response.status == 400) throw new Error(error.response.data.errorMessage);
-        else throw new Error("Something went wrong");
+        const msg = error.response?.data?.errorMessage || error.response?.data || error.message || "Something went wrong";
+        throw new Error(msg);
     }
 })
 
@@ -34,8 +34,8 @@ export const loginUser = createAsyncThunk("auth/login", async (userData) => {
 
         return res.data;
     } catch (error) {
-        if (error.response.status == 400) throw new Error(error.response.data.errorMessage);
-        else throw new Error("Something went wrong");
+        const msg = error.response?.data?.errorMessage || error.response?.data || error.message || "Something went wrong";
+        throw new Error(msg);
     }
 })
 
@@ -49,7 +49,78 @@ export const getMyRegistrations = createAsyncThunk("user/myRegisterations", asyn
         const registeredEvents = response.data.events;
         return registeredEvents;
     } catch (error) {
-        if (error.response.status == 400) throw new Error(error.response.data.errorMessage);
-        else throw new Error("Something went wrong");
+        const msg = error.response?.data?.errorMessage || error.response?.data || error.message || "Something went wrong";
+        throw new Error(msg);
     }
 })
+
+export const forgotPassword = createAsyncThunk("auth/forgotPassword", async (email) => {
+    try {
+        const res = await axios({
+            method: 'POST',
+            url: `${API_BASE_URL}/auth/forgot-password`,
+            data: { email }
+        });
+        return res.data;
+    } catch (error) {
+        if (error.response?.data?.errorMessage) throw new Error(error.response.data.errorMessage);
+        else throw new Error("Something went wrong");
+    }
+});
+
+export const verifyOtp = createAsyncThunk("auth/verifyOtp", async ({ email, otp }) => {
+    try {
+        const res = await axios({
+            method: 'POST',
+            url: `${API_BASE_URL}/auth/verify-otp`,
+            data: { email, otp }
+        });
+        return res.data;
+    } catch (error) {
+        if (error.response?.data?.errorMessage) throw new Error(error.response.data.errorMessage);
+        else throw new Error("Something went wrong");
+    }
+});
+
+export const resetPassword = createAsyncThunk("auth/resetPassword", async ({ resetToken, newPassword }) => {
+    try {
+        const res = await axios({
+            method: 'POST',
+            url: `${API_BASE_URL}/auth/reset-password`,
+            data: { resetToken, newPassword }
+        });
+        return res.data;
+    } catch (error) {
+        if (error.response?.data?.errorMessage) throw new Error(error.response.data.errorMessage);
+        else throw new Error("Something went wrong");
+    }
+});
+
+export const getProfile = createAsyncThunk("auth/getProfile", async (token) => {
+    try {
+        const res = await axios({
+            method: 'GET',
+            url: `${API_BASE_URL}/users/me`,
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        return res.data.user;
+    } catch (error) {
+        if (error.response?.data?.errorMessage) throw new Error(error.response.data.errorMessage);
+        else throw new Error("Something went wrong");
+    }
+});
+
+export const changePassword = createAsyncThunk("auth/changePassword", async ({ token, oldPassword, newPassword }) => {
+    try {
+        const res = await axios({
+            method: 'PUT',
+            url: `${API_BASE_URL}/users/change-password`,
+            headers: { Authorization: `Bearer ${token}` },
+            data: { oldPassword, newPassword }
+        });
+        return res.data;
+    } catch (error) {
+        if (error.response?.data?.errorMessage) throw new Error(error.response.data.errorMessage);
+        else throw new Error("Something went wrong");
+    }
+});
