@@ -50,59 +50,84 @@ const Login = () => {
   return (
     <>
       {toast && <Toast message={toast} />}
-      <div className="px-4 py-12">
-        <div className="bg-white p-6 rounded shadow-md w-full max-w-md mx-auto">
-          <h2 className="text-2xl font-semibold mb-4 text-center text-blue-600">
-            Login
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <input
-                type="email"
-                name="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md">
+          <div className="bg-white rounded-lg shadow-xl p-8">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold text-blue-600 mb-2">🎉 EventHub</h1>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
+              <p className="text-gray-600">Sign in to your account</p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <input
-                type="password"
-                name="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              />
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="you@example.com"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin">⏳</span> Signing in...
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
+              </button>
+            </form>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">or</span>
+              </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-            >
-              {loading ? "Logging in..." : "Login"}
-            </button>
-          </form>
-          {/* Google login removed */}
+            <div className="space-y-3">
+              <p className="text-center text-gray-700">
+                Don't have an account?{" "}
+                <Link to="/register" className="text-blue-600 hover:text-blue-700 font-bold">
+                  Create one
+                </Link>
+              </p>
+              <p className="text-center text-gray-700">
+                <Link to="/forgot-password" className="text-blue-600 hover:text-blue-700 font-bold">
+                  🔑 Forgot password?
+                </Link>
+              </p>
+            </div>
+          </div>
 
-            <p className="text-sm text-center mt-4">
-              Don’t have an account?{" "}
-              <Link to="/register" className="text-blue-600 hover:underline">
-                Register
-              </Link>
-            </p>
-
-            <p className="text-sm text-center mt-2">
-              <Link to="/forgot-password" className="text-blue-600 hover:underline">
-                Forgot password?
-              </Link>
-            </p>
+          <p className="text-center text-gray-600 text-sm mt-6">
+            By signing in, you agree to our Terms of Service
+          </p>
         </div>
       </div>
     </>

@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { initializeAuth } from "./store/slices/authSlice";
 import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
 import Login from "./pages/Login";
@@ -12,6 +15,13 @@ import AdminPage from "./pages/Admin";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
+  const dispatch = useDispatch();
+
+  // Initialize auth state on app load
+  useEffect(() => {
+    dispatch(initializeAuth());
+  }, [dispatch]);
+
   return (
     <Router>
       <div className="App">
