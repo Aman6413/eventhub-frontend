@@ -54,8 +54,7 @@ const EventDetail = () => {
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, id, user?.token, user?.role, navigate, user]);
+  }, [dispatch, id, user, navigate]);
 
   const isRegistered = myRegistrations.find((event) => event._id === id);
 

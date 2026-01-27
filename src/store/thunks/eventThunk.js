@@ -12,7 +12,7 @@ export const fetchEvents = createAsyncThunk("events/fetch", async (token) => {
     });
     return response.data;
   } catch (error) {
-    if (error.response.status == 400) throw new Error(error.response.data.errorMessage);
+    if (error.response.status === 400) throw new Error(error.response.data.errorMessage);
     else throw new Error("Something went wrong");
   }
 });

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchEventById, getMyRegistrations, registerForEvent } from "../thunks/eventDetailThunk";
+import { fetchEventById, registerForEvent } from "../thunks/eventDetailThunk";
 
 const initialState = {
   selectedEvent: null,

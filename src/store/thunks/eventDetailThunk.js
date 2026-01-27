@@ -12,7 +12,7 @@ export const fetchEventById = createAsyncThunk("eventDetail/fetch", async (fetch
     });
     return response.data.event;
   } catch (error) {
-    if (error.response.status == 400) throw new Error(error.response.data.errorMessage);
+    if (error.response.status === 400) throw new Error(error.response.data.errorMessage);
     else throw new Error("Something went wrong");
   }
 });
@@ -26,7 +26,7 @@ export const registerForEvent = createAsyncThunk("eventDetail/register", async (
     });
     return response.data.message;
   } catch (error) {
-    if (error.response.status == 400) throw new Error(error.response.data.errorMessage);
+    if (error.response.status === 400) throw new Error(error.response.data.errorMessage);
     else throw new Error("Something went wrong");
   }
 }
