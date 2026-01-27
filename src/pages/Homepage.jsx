@@ -18,7 +18,7 @@ const HomePage = () => {
     if (user && user.token) {
       dispatch(fetchEvents(user.token));
     }
-  }, [dispatch, user]);
+  }, [dispatch, user, user.token]);
 
   // 🔥 FILTER WITH DEADLINE LOGIC
   const filteredEvents = list.filter((event) => {

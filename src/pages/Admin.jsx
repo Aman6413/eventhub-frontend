@@ -38,7 +38,7 @@ const AdminPage = () => {
     dispatch(fetchEvents(user.token));
 
     // analytics moved to Profile dashboard
-  }, [dispatch, user]);
+  }, [dispatch, user, user.token]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

@@ -54,7 +54,7 @@ const EventDetail = () => {
     };
 
     fetchData();
-  }, [dispatch, id, user, navigate]);
+  }, [dispatch, id, user, navigate, user.token]);
 
   const isRegistered = myRegistrations.find((event) => event._id === id);
 
