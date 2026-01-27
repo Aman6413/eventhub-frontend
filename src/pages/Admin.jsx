@@ -39,7 +39,7 @@ const AdminPage = () => {
 
     // analytics moved to Profile dashboard
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, user?.token, user?.role]);
+  }, [dispatch, user?.token, user?.role, user]);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
