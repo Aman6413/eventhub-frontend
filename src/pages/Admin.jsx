@@ -26,7 +26,7 @@ const AdminPage = () => {
     location: "",
     contactNumber: "",
     type: "",
-    registrationDeadline: "", // 🔥 NEW
+    registrationDeadline: "", 
     maxRegistrations: "",
   });
 

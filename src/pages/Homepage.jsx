@@ -20,7 +20,6 @@ const HomePage = () => {
     }
   }, [dispatch, user, user.token]);
 
-  // 🔥 FILTER WITH DEADLINE LOGIC
   const filteredEvents = list.filter((event) => {
     const matchesSearch = event.title
       .toLowerCase()
@@ -29,7 +28,6 @@ const HomePage = () => {
     const matchesFilter =
       filter === "all" || event.type.toLowerCase() === filter.toLowerCase();
 
-    // ✅ DO NOT check deadline here
     return matchesSearch && matchesFilter;
   });
 

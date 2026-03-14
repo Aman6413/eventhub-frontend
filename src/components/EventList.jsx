@@ -108,12 +108,10 @@ const EventList = ({ events }) => {
           </div>
         );
 
-        // ❌ Completed or full event → no navigation
         if (status === "COMPLETED" || isFull) {
           return <div key={event._id}>{CardContent}</div>;
         }
 
-        // ✅ Clickable otherwise
         return (
           <Link to={`/events/${event._id}`} key={event._id}>
             {CardContent}

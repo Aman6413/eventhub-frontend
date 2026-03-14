@@ -158,7 +158,6 @@ const EventDetail = () => {
             </span>
           </div>
 
-          {/* 🔥 REGISTRATION DEADLINE */}
           {selectedEvent.registrationDeadline && (
             <p className="mb-2 text-gray-700">
               <strong>Registration Deadline:</strong>{" "}
@@ -170,7 +169,6 @@ const EventDetail = () => {
 
           <p className="mb-4 text-gray-800">{selectedEvent.description}</p>
 
-          {/* 🔥 REGISTER BUTTON LOGIC */}
           {user?.role !== "admin" && (
             <>
               {isCompleted ? (
